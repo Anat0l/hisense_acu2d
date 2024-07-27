@@ -51,6 +51,12 @@ HiSense_acu2d - проект по подключения WIFI модуля на 
 ## Пример минимальной конфигуции ESPHome
 
 ```
+# Enable logging, если нужен
+logger:
+  # Только на сетевом интерфейсе, вывод  в web консоль
+  # UART используется для взаимодействия с кондиционером
+  baud_rate: 0
+
 external_components:
   - source: github://Anat0l/hisense_acu2d
     components: [ hisense_acu2d ]
