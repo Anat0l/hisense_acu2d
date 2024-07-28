@@ -17,6 +17,10 @@ HiSense_acu2d - проект по подключения WIFI модуля на 
 
 При разработке использовался [модуль](https://github.com/dudanov/iot-uni-dongle)
 
+Базовый / основной блок кондиционера имеет маркеровку [PCB05-404-V02](https://www.google.com/search?q=PCB05-404-V02&oq=PCB05-404-V02), [1553856](https://www.google.com/search?q=1553856&oq=1553856)
+
+Экранный модуль имеет маркеровку [PCB05-471-V01](https://www.google.com/search?q=PCB05-471-V01), [1896342A](https://www.google.com/search?q=1896342A)
+
 ## Подключение
 
 Общий вид экранного модуля
