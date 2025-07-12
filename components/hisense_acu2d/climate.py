@@ -4,7 +4,7 @@ import esphome.config_validation as cv
 from esphome.components import uart, remote_transmitter
 from esphome.components.climate import ClimateSwingMode
 from esphome.components.remote_base import CONF_TRANSMITTER_ID
-from esphome.const import CONF_ID, CONF_SUPPORTED_SWING_MODES
+from esphome.const import CONF_SUPPORTED_SWING_MODES
 
 DEPENDENCIES = ["uart"]
 
@@ -23,10 +23,9 @@ ALLOWED_CLIMATE_SWING_MODES = {
 validate_swing_modes = cv.enum(ALLOWED_CLIMATE_SWING_MODES, upper=True)
 
 CONFIG_SCHEMA = cv.All(
-    climate.CLIMATE_SCHEMA.extend(
+    climate.climate_schema(HisenseACU2D)
+    .extend(
         {
-            cv.GenerateID(): cv.declare_id(HisenseACU2D),
-
             cv.Optional(CONF_SUPPORTED_SWING_MODES): cv.ensure_list(
                 validate_swing_modes
             ),
@@ -41,10 +40,8 @@ CONFIG_SCHEMA = cv.All(
 )
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = await climate.new_climate(config)
     await cg.register_component(var, config)
-
-    await climate.register_climate(var, config)
 
     await uart.register_uart_device(var, config)
 
