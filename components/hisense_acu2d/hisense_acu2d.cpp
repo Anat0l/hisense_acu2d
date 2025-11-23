@@ -132,6 +132,16 @@ void HisenseACU2D::dump_config() {
   this->check_uart_settings(1200);
 }
 
+void HisenseACU2D::setup() {
+    if (this->sensor_) {
+      this->sensor_->add_on_state_callback([this](float state) {
+        this->current_temperature = state;
+        this->publish_state();
+      });
+      this->current_temperature = this->sensor_->state;
+    }
+}
+
 void HisenseACU2D::loop() {
 
   char rxByte = 0;
@@ -185,6 +195,10 @@ void HisenseACU2D::loop() {
     
     SetTemp = MAX_VALID_TEMPERATURE - (0x64 - inputBuffer[7])/2;
     CurTemp = MAX_VALID_TEMPERATURE - (0x64 - inputBuffer[8])/2;
+    
+    if (this->sensor_) {
+      CurTemp = this->sensor_->state;
+    }
 
     this->current_temperature = (float)CurTemp;
     this->target_temperature = (float)SetTemp;
@@ -273,7 +287,7 @@ climate::ClimateTraits HisenseACU2D::traits() {
 
   auto traits = climate::ClimateTraits();
 
-  traits.set_supports_current_temperature(true);
+//  traits.set_supports_current_temperature(true);
   traits.set_visual_min_temperature(MIN_VALID_TEMPERATURE);
   traits.set_visual_max_temperature(MAX_VALID_TEMPERATURE);
   traits.set_visual_temperature_step(TEMPERATURE_STEP);
@@ -296,8 +310,12 @@ climate::ClimateTraits HisenseACU2D::traits() {
 
   traits.set_supported_swing_modes(this->supported_swing_modes_);
 
-  traits.set_supports_current_temperature(true);
-  traits.set_supports_two_point_target_temperature(false);
+  //traits.set_supports_two_point_target_temperature(false);
+  traits.clear_feature_flags(climate::CLIMATE_REQUIRES_TWO_POINT_TARGET_TEMPERATURE);
+  
+  //traits.set_supports_current_temperature(true);
+  traits.add_feature_flags(climate::CLIMATE_SUPPORTS_CURRENT_TEMPERATURE);
+  
 
 //  traits.add_supported_preset(climate::CLIMATE_PRESET_NONE);
 //  traits.add_supported_preset(climate::CLIMATE_PRESET_COMFORT);
@@ -527,6 +545,18 @@ uint8_t HisenseACU2D::get_checksum_(const uint8_t *message, size_t size) {
     crc += message[i];
 
   return crc;
+}
+
+void HisenseACU2D::set_ifeel_switch(switch_::Switch *ifeel_switch) {
+
+  this->ifeel_switch_ = ifeel_switch;
+  this->ifeel_switch_->add_on_state_callback([this](bool state) {
+    ESP_LOGD(TAG, "debug set_ifeel_switch. ");
+    if (state == this->ifeel_state_)
+      return;
+    ESP_LOGD(TAG, "set_ifeel_switch. ");
+//    this->on_ifeel_change(state);
+  });
 }
 
 }  // namespace hisense_acu2d
