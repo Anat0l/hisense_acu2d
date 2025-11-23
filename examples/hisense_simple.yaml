@@ -1,6 +1,7 @@
 esphome:
   name: esp-hisense-acu2d
   friendly_name: esp_hisense_acu2d
+  comment: "Пример простого файла фонфигурации управления кондиционером"
 
 esp8266:
   board: esp01_1m
@@ -53,6 +54,7 @@ remote_transmitter:
     number: GPIO13
     inverted: False
   carrier_duty_percent: 100%
+  non_blocking: true
 
 climate:
   - platform: hisense_acu2d
@@ -68,3 +70,4 @@ climate:
       - VERTICAL
       - HORIZONTAL
       - BOTH
+
