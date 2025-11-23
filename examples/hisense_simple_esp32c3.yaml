@@ -69,6 +69,7 @@ remote_transmitter:
     number: GPIO05
     inverted: False
   carrier_duty_percent: 100%
+  non_blocking: true
 
 # Приемник 
 # Приемник не нужен
