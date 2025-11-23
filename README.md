@@ -79,6 +79,7 @@ remote_transmitter:
     number: GPIO13
     inverted: False
   carrier_duty_percent: 100%
+  non_blocking: true
 
 climate:
   - platform: hisense_acu2d
