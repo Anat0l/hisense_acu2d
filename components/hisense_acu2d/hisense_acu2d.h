@@ -4,6 +4,8 @@
 #include "esphome/components/climate/climate.h"
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/remote_base/remote_base.h"
+#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/switch/switch.h"
 
 namespace esphome {
   namespace hisense_acu2d {
@@ -16,13 +18,16 @@ namespace esphome {
 
   class HisenseACU2D : public climate::Climate, public uart::UARTDevice, public Component {
   public:
+    void setup() override;
     void loop() override;
     void dump_config() override;
     void control(const climate::ClimateCall &call) override;
     void set_transmitter(RemoteTransmitterBase *transmitter) { this->transmitter_ = transmitter; }
-    void set_supported_swing_modes(const std::set<climate::ClimateSwingMode> &modes) {
+    void set_supported_swing_modes(climate::ClimateSwingModeMask modes) {
       this->supported_swing_modes_ = modes;
     }
+    void set_sensor(sensor::Sensor *sensor) { this->sensor_ = sensor; }
+    void set_ifeel_switch(switch_::Switch *ifeel_switch);
 
   protected:
     climate::ClimateTraits traits() override;
@@ -32,9 +37,16 @@ namespace esphome {
     uint8_t get_checksum_(const uint8_t *message, size_t size);
     RemoteTransmitterBase *transmitter_{nullptr};
 
+    sensor::Sensor *sensor_{nullptr};
+    
+    bool ifeel_state_ = false;
+    bool ifeel_switching_ = false;
+
+    switch_::Switch *ifeel_switch_ = nullptr;  // Switch to toggle iFeel mode on/off
+
   private:
     uint8_t data_[25];
-    std::set<climate::ClimateSwingMode> supported_swing_modes_{};
+    climate::ClimateSwingModeMask supported_swing_modes_{};
   };
 
   }  // namespace hisense_acu2d
